@@ -72,8 +72,8 @@ class DummyPredict():
         
     def predict(self, input):
         mfcc_ = librosa.feature.mfcc(input , sr=22050, n_mfcc=13)
-        x = [mfcc_]
-        x = np.array(x)
+        x = np.expand_dims(mfcc_, axis=0)
+        x = x.reshape(x.shape[0], x.shape[1], x.shape[2], 1)
 
         # multi_class_prediction
         predicted_class = self.multi_model.predict_classes(x)
@@ -105,14 +105,14 @@ class DemoClassify(Frame):
         RATE = 22050 # sampling rate
         self.CHUNK = 2*RATE # number of data to read every time
         p=pyaudio.PyAudio() 
-        self.stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
+        self.stream=p.open(format=pyaudio.paFloat32,channels=1,rate=RATE,input=True,
                     frames_per_buffer=self.CHUNK) #uses default input device
 
         # --------------------Start loop-------------------------------
         self.update_clock()
 
     def read_audio(self): 
-        return  np.frombuffer(self.stream.read(self.CHUNK),dtype=np.int16)
+        return  np.frombuffer(self.stream.read(self.CHUNK),dtype=np.float32)
 
     def update_clock(self):
         input = self.read_audio()
