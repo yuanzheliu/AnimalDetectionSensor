@@ -21,10 +21,10 @@ class DummyPredict():
         multi_model = self.create_model()
         binary_model = self.create_binary_model()
         ## restore the weights for multi_class_model
-        multi_latest = tf.train.latest_checkpoint('cpkt')
+        multi_latest = tf.train.latest_checkpoint('/home/thomas/Fall2020/Sensing/project/AnimalDetectionSensor/cpkt')
         multi_model.load_weights(multi_latest)
         ## restore the weights for binary_class_Model
-        bi_latest = tf.train.latest_checkpoint('binary_cpkt')
+        bi_latest = tf.train.latest_checkpoint('/home/thomas/Fall2020/Sensing/project/AnimalDetectionSensor/binary_cpkt')
         binary_model.load_weights(bi_latest)
 
         ## assign self
@@ -83,13 +83,16 @@ class DummyPredict():
         predicted_bi = self.binary_model.predict_classes(x)
         predicted_bi = predicted_bi.flatten()
         bi_name = 'Non-Animal'
+        bi_conf = 0
         if predicted_bi[0] == 1:
             bi_name = 'Animal'
+            bi_conf = self.binary_model.predict(x)[0][0]
+        else:
+            bi_conf = 1 - self.binary_model.predict(x)[0][0]
+            
 
         ## get the confidence
         multi_conf = np.max(self.multi_model.predict(x)[0]) 
-        bi_conf = np.max(self.binary_model.predict(x)[0])
-
         return class_name, multi_conf*100, bi_name, bi_conf*100
 
 
@@ -116,16 +119,16 @@ class DemoClassify(Frame):
 
     def update_clock(self):
         input = self.read_audio()
-        print(input.shape)
         predict = self.model.predict(input)
-        out = "Multi-class Predicted {} with {}% confidence \n Animal Vs. Nonanimal Predicted {} with {}% confidence".format(predict[0], predict[1], predict[2], predict[3])
+        out ="{}: {:.2f}% \n{}: {:.2f}% ".format(predict[2], predict[3], predict[0], predict[1])
+        # out = "Multi-class Predicted {} with {}% confidence \n Animal Vs. Nonanimal Predicted {} with {}% confidence".format(predict[0], predict[1], predict[2], predict[3])
         self.label.configure(text = out)
-        self.after(2000, self.update_clock)
+        self.after(1750, self.update_clock)
 
 canvas = Tk()
 demo=DemoClassify(canvas)
 canvas.wm_title("Tkinter clock")
 canvas.geometry("450x250")
-canvas.after(1000, demo.update_clock)
+canvas.after(250, demo.update_clock)
 canvas.mainloop()
 
