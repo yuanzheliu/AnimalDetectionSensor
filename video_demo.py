@@ -16,7 +16,7 @@ def PlayVideo(video_path):
             break
         if cv2.waitKey(28) & 0xFF == ord("q"):
             break
-        cv2.imshow("Video", frame)
+        cv2.imshow("Image", frame)
         if val != 'eof' and audio_frame is not None:
             #audio
             img, t = audio_frame
