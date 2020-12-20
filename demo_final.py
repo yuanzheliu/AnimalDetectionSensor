@@ -72,7 +72,7 @@ for i in range(1, 1358):
 
     # print((1.0 - timeDiff)/fps)
     # print(time.time() - now)
-    time.sleep((1.0 - timeDiff)/30)
+    time.sleep((1.0 - timeDiff)/29)
     # Display the resulting frame
     # cv2.imshow('video', resize)
     # print(cap.get(1)-1)
